@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Flashcard System</title>
+   <link rel="stylesheet" href="styless.css">
+</head>
+<body>
+
+  <h2>Add Flashcard</h2>
+  <label>Student ID:</label><br>
+  <input id="student_id"><br><br>
+
+  <label>Question:</label><br>
+  <input id="question"><br><br>
+
+  <label>Answer:</label><br>
+  <input id="answer"><br><br>
+
+  <button onclick="addFlashcard()">Add Flashcard</button>
+  <p id="addMessage"></p>
+
+  <hr>
+
+  <h2>Get Flashcards</h2>
+  <label>Student ID:</label><br>
+  <input id="get_id"><br><br>
+
+  <label>Limit:</label><br>
+  <input id="limit" type="number"><br><br>
+
+  <button onclick="getFlashcards()">Get Flashcards</button>
+
+  <div id="output"></div>
+
+  <script>
+    let flashcards = [];
+
+    function Subject(text) {
+      text = text.toLowerCase();
+      if (text.includes("newton") || text.includes("force") || text.includes("acceleration")) return "Physics";
+      if (text.includes("photosynthesis") || text.includes("plant")) return "Biology";
+      if (text.includes("atom") || text.includes("reaction")) return "Chemistry";
+      if (text.includes("algebra") || text.includes("geometry")) return "Maths";
+      return "General";
+    }
+
+    function addFlashcard() {
+      const id = document.getElementById("student_id").value;
+      const question = document.getElementById("question").value;
+      const answer = document.getElementById("answer").value;
+
+      if (!id || !question || !answer) {
+        document.getElementById("addMessage").textContent = "Please fill all fields.";
+        return;
+      }
+
+      const subject = Subject(question + " " + answer);
+
+      flashcards.push({ student_id: id, question, answer, subject });
+
+      document.getElementById("addMessage").textContent = `Flashcard added! Subject: ${subject}`;
+      document.getElementById("question").value = "";
+      document.getElementById("answer").value = "";
+    }
+
+    function getFlashcards() {
+      const id = document.getElementById("get_id").value;
+      const limit = parseInt(document.getElementById("limit").value);
+
+      const userCards = flashcards.filter(f => f.student_id === id);
+
+      const grouped = {};
+      userCards.forEach(card => {
+        if (!grouped[card.subject]) grouped[card.subject] = [];
+        grouped[card.subject].push(card);
+      });
+
+      let result = [];
+      for (let subject in grouped) {
+        const cards = grouped[subject];
+        result.push(cards[Math.floor(Math.random() * cards.length)]);
+      }
+
+    
+      result = result.sort(() => 0.5 - Math.random()).slice(0, limit);
+
+      const output = document.getElementById("output");
+      output.innerHTML = "<h3>Flashcards:</h3>";
+      result.forEach(card => {
+        output.innerHTML += `<p><b>${card.subject}</b><br>Q: ${card.question}<br>A: ${card.answer}</p>`;
+      });
+    }
+  </script>
+
+</body>
+</html>
